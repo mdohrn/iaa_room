@@ -152,7 +152,7 @@ Weil der Raum nicht immer ausgewählt ist, kann die property wie folgt aussehen 
 
 **2.** Erstellen Sie die nachfolgende Methode 
 ````typescript
- onSelect(room: Room) {
+ onSelect(room: Room): void {
         this.selectedRoom = room;
     }
 ````
@@ -196,7 +196,7 @@ anmelden können und diese dann nachfolgend den Raum "wirklich" löschen kann.
 **3.** Erstellen Sie eine neue Methode mit folgendem Inhalt: 
 
 ```typescript
-  onDelete() {
+  onDelete(): void {
          this.delete.emit(this.selectedRoom);
      }
 ```

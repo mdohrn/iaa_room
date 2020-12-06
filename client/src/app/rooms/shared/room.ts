@@ -1,6 +1,6 @@
 export class Room {
 
-    constructor(public building: String = null,
+    constructor(public building: string = null,
                 public roomNumber: number = null,
                 public seats: number = null,
                 public projectorPresent: boolean = false) {

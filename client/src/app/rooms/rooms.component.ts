@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {Room} from './shared/room';
+import {RoomService} from './shared/room.service';
 
 @Component({
     selector: 'app-rooms',
@@ -7,11 +9,22 @@ import {Component, OnInit} from '@angular/core';
 })
 export class RoomsComponent implements OnInit {
 
-    ngOnInit() {
+    rooms: Room[];
+
+    constructor(private roomService: RoomService) {
+    }
+
+    ngOnInit(): void {
         this.reloadList();
     }
 
-    private reloadList() {
-        //This needs to be implemented. We want to load fill the rooms variable by calling a service method...
+    onDeleteRoom(roomToBeDeleted: Room): void {
+        this.roomService.deleteRoom(roomToBeDeleted).subscribe(ignored => this.reloadList());
+    }
+
+    private reloadList(): void {
+        this.roomService.listAllRooms().subscribe(rooms => {
+            this.rooms = rooms;
+        });
     }
 }

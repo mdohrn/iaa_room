@@ -1,0 +1,7 @@
+.selected {
+    background-color: #f9ba00;
+}
+
+.disabled {
+    background-color: lightgray;
+}

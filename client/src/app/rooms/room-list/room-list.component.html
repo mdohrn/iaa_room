@@ -1,0 +1,16 @@
+<table>
+    <tr>
+        <th>Building</th>
+        <th>Room number</th>
+        <th>Seats</th>
+        <th>Projector present?</th>
+    </tr>
+    <tr *ngFor="let room of rooms" [class.selected]="room === selectedRoom" (click)="onSelect(room)">
+        <td>{{room.building}}</td>
+        <td>{{room.roomNumber}}</td>
+        <td>{{room.seats}}</td>
+        <td>{{room.projectorPresent}}</td>
+    </tr>
+</table>
+
+<button (click)="onDelete()" [disabled]="!selectedRoom" [class.disabled]="!selectedRoom">Delete</button>
