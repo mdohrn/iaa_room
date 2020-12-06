@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Room} from "../shared/room";
+import {Room} from '../shared/room';
 
 @Component({
     selector: 'app-room-list',
