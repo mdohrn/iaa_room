@@ -16,18 +16,18 @@ export class RoomListComponent implements OnInit {
     @Output()
     delete = new EventEmitter<Room>();
 
-    constructor() {
-    }
-
-    ngOnInit(): void {
-    }
-
-    onSelect(room: Room): void {
+    onSelect(room: Room) {
         this.selectedRoom = room;
     }
 
-    onDelete(): void {
+    onDelete() {
         this.delete.emit(this.selectedRoom);
+    }
+
+    constructor() {
+    }
+
+    ngOnInit() {
     }
 
 }

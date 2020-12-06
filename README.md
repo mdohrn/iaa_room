@@ -1,236 +1,214 @@
 # Angular Roommanagement
 
 In dieser Übung wollen wir unsere NAK Raumverwaltung mit Hilfe von Angular umsetzen. 
-Das Prinzip ist dabei das gleiche wie in der Struts Aufgabe. Wir verwalten Räume, die wir zu Beginn
+Das Prinzip ist dabei das gleiche wie in den Aufgaben zu Struts. Wir verwalten Räume, die wir zu Beginn 
 tabellarisch darstellen wollen. Durch unterschiedliche Buttons (*Erstellen*, *Bearbeiten*, *Löschen*) springen wir, wenn nötig,
 in die einzelnen Masken. 
 
 
 ## Aufbau und Vorbereitung
 
-Schauen Sie sich die Ordnerstruktur des Projektes an. Wir haben einen Ordner auf der höchsten Ebene mit dem Namen `client`. Dieser enthält unseren
-Angular Quellcode. Darin befindet sich unter anderem der `src`-Ordner mit einem Angular *root*-Module.
+Schauen Sie sich die Ordnerstruktur des Projektes an. Wir haben nun zwei Ordner auf der höchsten Ebene. Einen mit dem Namen `client` und einen weiteren mit dem Namen `server`.
+Der Ordner `client` ist uns bereits bekannt. Im Ordner `server` befindet sich unser REST-Backend, von dem wir im Laufe der Übung
+unsere Daten beziehen möchten. 
 
 Wir wollen unsere Verwaltung der Raummaske in unterschiedliche Komponenten aufteilen. 
 
-Die spätere Struktur soll dabei wie folgt aussehen: 
+Die endgültige Struktur soll dabei wie folgt aussehen: 
 
 - `app`-Modul (root)
   - `rooms`-Component 
-    - `room-list`-Component (Tabellarische Anzeige der Räume)
+    - `room-list`-Component (Tabellarische Anzeige der Räume) --- Haben wir bereits in der vorherigen Übung implementiert.
     - `room-form`-Component (Komponente zur Bearbeitung/Erstellung eines Raums) 
 
+Wir wollen nun also die Bearbeitung von Räumen implementieren. Hierzu wollen wir die `room-form`-Komponenten erstellen und nachfolgend
+implementieren. 
 
-**1.** Überprüfen Sie, welche dieser Module/Komponenten bereits vorhanden sind und welche noch fehlen. 
+## Entwicklung der `room-form`-Komponente
 
-**2.** Was macht der Ordner `shared` innerhalb unserer Angular Anwendung? Wofür könnte er 
-nützlich sein?
+Diese Komponente wird sich letztendlich an der Implementation aus unserer Struts-Übung orientieren. 
 
-**3.** Starten Sie die Anwendung mit dem Befehl `ng serve`.
+**1.** Erstellen Sie mit Hilfe der Angular-CLI (`ng genereate`) die Komponenten `room-form` im Ordner `rooms`.
 
-Bedenken Sie, dass Sie wohlmöglich die Abhängigkeiten noch nicht installiert haben. Sollte dies der Fall sein, holen Sie dies mit dem Befehl
-`npm install` nun nach. 
+Beginnen wir mit der TypeScript-Implementation der Klasse in der `room-form.component.ts`.
 
-## Initiales Laden der Räume
+### Implementieren der Logik für die `room-form`-Komponente
 
-Damit wir überhaupt Räume angezeigt bekommen, müssen wir die Räume, welche angezeigt werden sollen, laden und die oben genannten `room-list`-Komponenten implementieren.
+Unsere Komponente soll genau einen Raum bearbeiten können und darüberliegende Komponenten können 
+sich über zwei unterschiedliche Events informieren lassen: `save` und `cancel`. 
 
-Wir wollen die bereits existierende `rooms`-Komponente verwenden um die Liste der Räume zu halten und als "Vermittler" zwischen den Subkomponenten
-`room-list` und `room-form` zu agieren. 
- 
+**2.** Fügen Sie der Implementation eine public property mit dem Namen `room` und den entsprechenden Typ hinzu. 
+Setzen Sie dabei auch gleich den `@Input`-Dekorator. 
 
-**1.** Fügen Sie der `rooms.component.ts` eine public property mit dem Namen und dem Typ `rooms: Room[];` hinzu.
+**3.** Erstellen Sie zwei `EventEmitter` als public property für unsere Ausgaben. 
+Die Namen sind entsprechend `save` bzw. `cancel`. Setzen Sie auch hier gleich den `@Output`-Dekorator. 
 
-Hier werden wir unsere Liste von Räumen halten, die nachfolgend angezeigt und bearbeitet werden können.  
+Tipp: Im Grunde unterscheiden sich die `EventEmitter` nur darin, dass `save` einen Raum zurück gibt, wohingegen `cancel` 
+unseren Raum nicht zurückgeben muss.
 
-**2.** erzeugen Sie den nachfolgenden Konstruktor: `constructor(private roomService: RoomService) {}`. 
-                                                        
-Dieser Konstruktor übermittelt uns beim Erzeugen der Komponenten den RoomService, von welchem wir die Daten beziehen können. 
+**4.** Damit wir aus dem UI auf unsere `EventEmitter` zugreifen können, benötigen wir noch zwei Methoden. Erzeugen Sie `onSubmit()`
+und `onCancel()`. 
 
-Was macht eigentlich das Wort `private` innerhalb der Parameter? 
+Die Implementation dieser Methoden ist Ihnen bereits aus der vorherigen Übung bekannt. Nutzen Sie auf dem `EventEmitter`
+die Methode `emit(value?: any)` und übergeben Sie unseren Raum, dort wo es sinnvoll ist. 
 
-**3.** Implementieren Sie die Methode `private reloadList()`. 
+**5.** Implementieren Sie die eben beschriebenen Methoden.
 
-Wir wollen mit dieser Methode an einer zentralen Stelle innerhalb der Komponente den `roomService` nach der Liste aller Räume fragen und diese nachfolgend
-in unsere `rooms`-Variable übernehmen. 
+### Implementieren der View für die `room-form`-Komponente
 
-*Tipp:* Sie erreichen den `roomService` über `this`. Da die Methode `listAllRooms()` ein Observable zurück gibt, können wir mit der 
-Methode `subscribe((rooms: Room[]) => void)` auf das Ergebnis der Methode zugreife, wenn es verfügbar ist.
+Zur Bearbeitung eines Raumes nutzen wir die bekannten HTML-Tags und erweitern diese mit den entsprechenden Angular 
+Built-in Direktiven. 
 
-*Pro-Tipp:* Arrow-Functions! 
+**1.** Öffnen Sie die `room-form.component.html`, löschen Sie dessen Inhalt und fügen Sie eine Headline hinzu. Beispielsweise  mit dem Inhalt "Room Details". 
 
-Nun sollte automatisch über die Methode `ngOnInit()` unsere `rooms`-Variable mit Räumen gefüllt sein. Nur leider können
-wir diese noch nicht darstellen. Das tun wie jetzt...
+**2.** Erstellen Sie ein Formular `<form>...</form>`, fügen Sie einen Submit-Button hinzu und verwenden Sie das `ngSubmit` event binding, wie 
+in der Vorlesung gezeigt. 
 
+Nun wollen wir die eigentlichen Attribute eines Raums innerhalb des Formulars bearbeitbar machen. Hierzu bendienen wir uns wieder den altbekannten
+HTML-Tags für Formulare. Das erste Eingabefeld für das Gebäude könnte also wie folgt aussehen: 
+`````html
+    <p>
+        <label for="building">Building:</label>
+        <input id="building" name="building" [(ngModel)]="room.building">
+    </p>
+`````
 
-## Erzeugen der `room-list`-Komponente
+**3.** Orientieren Sie sich am gezeigten Beispiel und implementieren Sie die noch fehlenden Attribute innerhalb des Formulars. 
 
-Lasse Sie uns die tabellarische Darstellung der Räume implementieren. Hierzu erzeugen wir eine neue Komponenten.
+Tipp: Verwenden Sie bei `projectorPresent` ein Eingabefeld mit `type="checkbox"`. 
 
-**1.** Navigieren Sie mit Hilfe des Terminals zum Pfad `client/src/app/rooms` 
+Nun fehlt nur noch die Funktionalität, mit der wir eine Bearbeitung abbrechen und auf die `room-list` zurückspringen können. 
 
-**2.** Nutzen Sie `ng create` um eine Komponente mit dem Namen `room-list` zu erzeugen. 
-
-*Tipp*: Es bietet sich an den CLI-Befehel `ng generate component` hierfür zu verwenden.
-*Pro Tipp:* Noch kürzer geht es mit `ng g c`. 
-
-**3.** Fügt die gerade generierte Komponente in der `rooms.component.html` hinnzu. 
-
-Sehr wahrscheinlich ist der selector für Ihre Komponente `app-room-list`, d.h. Sie können in der HTML einfach folgendes einfügen: 
-
-````html 
-<app-room-list></app-room-list>
-````
-
-**4.** Starten Sie die Anwendung wieder und schauen Sie, ob Sie `room-list works!` sehen. Sollte dies nicht der Fall sein, scheint irgendetwas schiefgelaufen
-zu sein. 
-
-
-### Implementieren der Logik für die `room-list`-Komponente
-
-Unsere Komponente soll eine Liste von Räumen darstellen. Bevor wir uns um die Darstellung kümmern, wollen wir sicherstellen, dass zumindest unsere UI-Logik
-bereits vorhanden ist. 
-
-Wir befinden uns nun also in der `room-list.component.ts`. Damit unsere Komponente mit Räumen umgehen kann, benötigen wir wieder eine Variable
-die eine Liste von Räumen hält. 
-
-**1.** Fügen Sie die public property `rooms: Room[] = [];` unserer Implementation hinzu. 
-
-Wir wollen nun die besagten Räume nicht nochmal laden, denn unsere übergeordnete Komponente, `rooms`, lädt diese Räume ja bereits. Stattdessen 
-wollen wir die Liste der Räume als `Input` für unsere Komponente definieren. 
-
-**2.** Setzen Sie den `Input`-Decorator für `rooms` ein. 
-
-Wir können nun unserer Komponente eine Liste von Räumen mitgeben, die sie anzeigen soll. 
-Dieses neue Attribut ziehen wir am besten direkt in der `rooms.component.html` nach. 
-
-**3.** Fügen Sie `[rooms]="rooms"` unseres `app-room-list`-Tags hinzu.
- 
-### Entwickeln der View für die `room-list`-Komponente
-
-Nun haben wir zwar die Daten aber wir können Sie noch immer nicht darstellen. Diesem "Problem" widmen wir uns jetzt. 
-
-**1.** Öffnen Sie die Datei, welche für die View unserer Komponenten zuständig ist.
-
-*Tipp:* Die Datei heißt sicher irgendwas mit `room-list` und endet auf `.html`. 
-Hier wir auch unser bekanntes `room-list works!` wieder. 
-
-**2.** Implementieren Sie nun eine Tabelle, die als Tabellenkopf wieder unsere bekannten Felder enthält: 
-
-- Building
-- Room Number
-- Seats
-- Projector present? 
-
-**3.** In der drauffolgenden Tabellenzeile sollten Sie die entsprechenden Eigenschaften der Räume ausgeben.
-
-Beginnen Sie am einfachsten mit einer Zeile `<tr>` die als Zelle `<td>` das jeweilige Attribut zur Spalte als *String interpolation* ausgibt. 
-*Tipp:* Das würde für *Building* wie folgt aussehen: `<td>{{room.building}}</td>`.
-
-**4.** Iterieren Sie mit Hilfe der Direktive `*ngFor` im `<tr>`-Tag über die Liste unserer Räume. 
-Erzeugen Sie sich hierzu eine Laufvariable `room` wie in den Vorlesungsfolien gezeigt. 
-
-**5.** Testen Sie die Anwendung. Sie sollten nun eine Liste von Räumen sehen. 
-
-
-## Die erste *CRUD*-Funktionalität
-
-Wir wollen nun noch die einfachste aller *CRUD*-Funktionalitäten entwickeln, nämlich das *Delete*. 
-
-### Erweitern der UI mit einem Delete-Button
-
-Lassen Sie uns den ersten Button hinzufügen, welcher es uns ermöglicht, einen Raum zu löschen. 
-Leider müssen wir hierzu noch etwas anderes vorbereiten, denn wir können aktuell noch keinen Raum auswählen. 
-
-Beginnen wir also mit der Auswahl eines Datensatzes.
-
-#### Auswahl eines Raumes in der Liste
-
-**1.** Erstellen Sie in `room-list.component.ts` eine public property mit dessen Hilfe wir einen ausgewählten Raum speichern können.
-
-Weil der Raum nicht immer ausgewählt ist, kann die property wie folgt aussehen `selectedRoom?: Room;`
-
-**2.** Erstellen Sie die nachfolgende Methode 
-````typescript
- onSelect(room: Room): void {
-        this.selectedRoom = room;
-    }
-````
-
-Diese Methode können wir vom UI aufrufen um einen Raum zu selektieren. 
-
-**3.** Fügen Sie in `room-list.component.html` in unserer `<tr>`-Zeile einen Event-Listener für `click` ein. 
-
-Einen Klick auf die Tabellenzeile soll den darin enthaltenen Raum an die `onSelect(room: Room)`-Methode übergeben. 
-
-*Tipp:* Es handelt sich um ein *event binding*. 
-
-**4.** Fügt der `<tr>` Zeile noch das folgende property binding hinzu `[class.selected]="room === selectedRoom"`. 
-
-Überlegen Sie mal, was diese Zeile wohl bedeutet. 
-
-**5.** Machen Sie die Auswahl hübsch. 
-
-Hierzu passen wir die `room-list.component.css` an und fügen beispielsweise nachfolgenden CSS-Code ein, damit unsere Tabellenzeile bei Auswahl
-blau hinterlegt ist: 
-
-````css
-.selected {
-    background-color: lightblue;
-}
-````
-
-### Die Delete-Funktionalität in der `room-list`-Komponente
-
-Nun wollen wir unserer Komponente noch das Löschen beibringen.
-Erinnern Sie sich daran, dass die `room-list` zwar die Räume zum anzeigen benötigt, diese aber eigentlich von der `rooms`-Komponente bekommt. Wir sollten daher gelöschte 
-Räume auch wieder an die `rooms`-Komponente weiterleiten. 
-
-**1.** Erstellen Sie in `room-list.component.ts` eine property mit dem Namen `delete` und initialisieren Sie die Variable mit `new EventEmitter<Room>();`
-
-**2.** Fügen Sie den `Output`-Decorator hinzu, damit wir später auf dieses Event hören können. 
-
-Eine andere Komponente kann sich nun bei uns "registrieren" und auf gelöschte Räume reagieren. Das ist sehr zweckdienlich, da wir so die `rooms`-Komponente  
-anmelden können und diese dann nachfolgend den Raum "wirklich" löschen kann. 
- 
-**3.** Erstellen Sie eine neue Methode mit folgendem Inhalt: 
-
-```typescript
-  onDelete(): void {
-         this.delete.emit(this.selectedRoom);
-     }
-```
-
-Diese Methode wollen wir aus dem UI aufrufen, wenn ein Nutzer auf unseren `Delete`-Button klickt. 
-
-**4.** Fügen Sie der `room-list.component.html` den folgenden Button hinzu: 
-
-````html
-<button (click)="onDelete()" [disabled]="!selectedRoom">Delete</button>
-````
-
-Überlegen Sie, was wohl das property binding `disabled` an dieser Stelle tut. 
-
-
-### Erweitern der `rooms`-Komponenten
-
-Unsere `room-list`-Komponente hat nun alles, was sie zum Löschen eines Raumes benötigt. Nun müssen wir noch den Raum aus der `rooms`-Komponente löschen.
-
-**1.** Erzeugen Sie in `rooms.component.ts` die Methode `onDeleteRoom(roomToBeDeleted: Room)` und implementieren Sie diese. 
-
-Wir wollen in der Implementation den übergebenen Raum an den `roomService` und dessen Methode `deleteRoom(room: Room): Observable<any>` weiterleiten. 
-Sobald das Observable etwas zurückmeldet, aktualisieren wir die Liste der Räume mit einem Aufruf von `this.reloadList()`. 
-
-**2.** Fügen Sie der `rooms.component.html` das event binding für unsere *Delete*-Funktion hinzu. 
-
-*Tipp:* Wir haben den Output-Decorator `delete` genannt und die aufzurufende Methode eben `onDeleteRoom` Daraus ergibt sich das folgendes event binding für unsere 
-`<app-room-list>` : `(delete)="onDeleteRoom($event)`. 
-
-Nun sollte auch das Delete funktionieren.
-
-# Testen testen testen
-
-Testen Sie die Anwendung. Wie bekommen Sie wohl die Räume wieder, wenn Sie alle gelöscht haben?  
+**4.** Fügen Sie einen *Cancel*-Button hinzu, welcher im `click` ein event binding auf unsere `onCancel()` Methode bekommt. 
 
  
-                                                     
+## Erweitern der `room-list`-Komponenten
+
+Wir wollen nun unsere Komponenten aus der letzten Übung anpassen, damit wir ausgewählte Räume bearbeiten oder neue Räume hinzufügen können. 
+
+Hierzu soll die `room-list` nicht wirklich das Bearbeiten in die Wege leiten, denn sie ist nur dafür entwickelt worden Räume anzuzeigen. Sie soll aber 
+Buttons ("Edit","New") inklusive der dazugehörigen `EventEmitter` anbieten, damit die darübergelgenene `rooms`-Komponente bei einem Klick auf die Buttons
+die `room-list` ausblenden und den zu bearbeitenden Raum mit der `room-form` einblenden kann. 
+
+### Erweitern der Logik in der `room-list`
+
+Wir befinden uns in der Datei `room-list.component.ts`.
+
+**1.** Erstellen Sie zwei neue, mit `@Output` dekorierten, public properties vom Type `EventEmitter` und den Namen `add` und `edit`. 
+ 
+Tipp: Überlegen Sie auch hier, welche der `EventEmitter` wirklich einen Raum zurückgeben müssen. 
+
+**2.** Implementieren Sie zwei neue Methoden für unser UI, die die jeweiligen `EventEmitter` aufrufen: `onEdit()` und `onAdd()`.
+
+###  Erweitern der View in der `room-list`
+
+Damit der Nutzer nun auch einen ausgewählten Raum editieren oder einen neuen Raum hinzufügen kann, benötigen wir für diese Funktionalitäten 
+noch Buttons. 
+
+**1.** Fügen Sie der `room-list.component.html` einen `Add`-Button hinzu und rufen Sie im entsprechenden `click` event binding unsere `onAdd()`-Methode auf. 
+
+**2.** Fügen Sie der `room-list.component.html` einen `Edit`-Button hinzu und rufen Sie im entsprechenden `click` event binding unsere `onEdit()`-Methode auf.
+
+Tipp: Überlegen Sie, welche der beiden Buttons ebenfalls nur anklickbar sein sollte, wenn ein Raum ausgewählt ist. 
+
+
+## Erweitern der `rooms`-Komponente
+
+Unsere `rooms`-Komponente steuert ihre eigenen Sub-Views. Die Idee ist nun, dass sich die `rooms`-Komponente an der `room-list`-Komponente anmeldet, um darüber benachrichtigt zu werden, wenn der Nutzer in der Liste auf "Add" oder "Edit" geklickt hat, um daraufhin die `room-form`-Komponenten einzublenden.
+ 
+Im Prinzip ähnelt der Logikfluss der bereits Implementierten Löschfunktion. 
+
+
+### Erweitern der Logik in der `room`-Komponente
+
+**1.** Erstellen Sie in der `rooms.component.ts`-Komponente eine neue public property `currentRoom?: Room;` 
+
+Hier wollen wir einen Raum speichern, der gerade bearbeitet wird. 
+
+**2.** Erstellen Sie zwei Methoden: `onAddRoom()` sowie `onEditRoom(room: Room)` und implementieren Sie diese. 
+
+Beide Methoden sollen einen Raum in `currentRoom` setzen. Entweder übernimmt die Methode den Raum aus den Methodenparameter 
+oder es wird ein neuer erstellt.
+
+Wir benötigen nun noch eine Methode, die uns einen Raum speichert bzw. aktualisiert, wenn die Bearbeitung in der `room-form`-Komponente
+abgeschlossen ist.
+
+**3.** Erstellen Sie die Methode `onSave(roomToBeSaved: Room);` und implementieren Sie diese so, dass Sie zum Speichern unsere
+`roomService` verwendet.
+
+**4**. Fügen Sie die Methode `onCancel()` hinzu. Diese ruft intern einfach die Methode `reloadList()` auf. 
+
+**5.** Stellen Sie beim Neuladen in der Methode `reloadList()` sicher, dass wir den `currentRoom` auf `null` setzen. 
+
+### Erweitern der View in der `room`-Komponente
+
+Nun müssen wir noch die View `rooms.component.html` implementieren. Hier ist die Idee, dass wir die `<app-room-list>....</app-room-list>` Komponete immer dann anzeigen,
+wenn `currentRoom` nicht gesetzt ist. Anderfalls wollen wir die  `<app-room-form>...</<app-room-form>`, welche wir gleich einfügen, anzeigen. 
+
+**1.** Nutzen Sie `**ngIf**` um die `<app-room-list>` einzublenden, wenn `currentRoom` nicht gesetzt ist. 
+
+Tipp: Verwenden Sie die Direktive einfach in Verbindung mit einem ummantelnden HTML-Tag wie bspw. `<p>...</p>`.
+
+**2.** Ergänzen Sie die event bindings `(add)` und `(edit)` in der `app-room-list` und verweisen Sie entsprechend auf die eben angelegten 
+Methoden in der `rooms.component.ts`.
+
+**3.** Fügen Sie nun unsere neue Komponente `<app-room-form>....</app-room-form>` hinzu. Setzen Sie das property binding `[room]` sowie die beiden 
+event bindings `(save)` und `(cancel)` 
+
+Tipp: Nutzen Sie die zuvor implementieren Methoden aus der `rooms.component.ts`.
+
+**4.** Stellen Sie sicher, dass über die Direktive `**ngIf` gesteuert wird, dass `<app-room-form>...</app-room-form>` nur eingeblendet wird, 
+wenn `currentRoom` gesetzt ist.
+
+## Der `room`-Service
+ 
+Wie Ihnen sicher schon aufgefallen ist, haben wir bereits einen Service, nämlich den `RoomService`. Er befindet sich im `shared` package. 
+Wir haben diesen auch schon innerhalb der `rooms`-Komponente zum Speichern und Laden von Räumen genutzt. Leider arbeitet dieser noch mit Dummy-Daten und nicht 
+wirklich mit unserem Backend zusammen. Die Daten kommen in Wirklichkeit aus der Datei `mock-rooms.ts`. 
+
+Wir wollen nun unseren bestehenden Service so anpassen, dass die Daten von unserem Backend geladen werden. Dafür können wir die Schnittstelle so belassen
+wie sie ist. Nur die Implementation muss angepasst werden. 
+
+### Anpassen der `room`-Service Implementation
+
+**1.** Löschen Sie die Datei `mock-rooms.ts`. 
+
+Wir benötigen Sie nicht mehr und überall dort wo jetzt Fehler entstehen, müssen wir wohl eingreifen. So stellen wir sicher,
+dass wir die Dummy-Daten auf keinen Fall mehr benutzen. 
+
+**2.** Öffen Sie die `room.service.ts` und löschen Sie auch hier die private property `rooms` und die Implementationen der Methoden. 
+
+**3.** Fügen Sie dem Konstruktor die Abhängigkeit zum Service `HttpClient` hinzu.
+
+Wir benötigen diesen von Angular bereitgestellten Service, um Anfragen an das Backend abzusetzen. 
+
+Tipp: Sie wissen nicht, wie Sie den Service als Abhängigkeit angeben können, schauen Sie hierzu in die Vorlesungsfolien.   
+
+**4.** Fügen Sie folgende Konstante Ihrer `RoomService`-Implementation hinzu:  `const ROOMS_ENDPOINT = '/rest/rooms';`. 
+ 
+Dies ist der Pfad zum Backend, den wir gleich zur Kommunikation nutzen wollen. 
+ 
+**5.** Implementieren Sie die Methode `listAllRooms(): Observable<Room[]>` und nutzen Sie auf dem `HttpClient` die Methode `get`. 
+
+Als Ziel des Aufrufs nutzen wir den `ROOMS_ENDPOINT` und erwarten den Typ `Room[]`. Da der `HttpClient` ebenfalls ein `Observable` zurückgibt, benötigen wir
+keine weitere Logik, sondern können das `Observable` einfach durchreichen.   
+
+**6.** Implementieren Sie nun `saveRoom(roomToBeSaved: Room): Observable<any>` und nutzen Sie die `put`-Methode vom `HttpClient`. 
+
+Der Endpoint bleibt der gleiche. Wir müssen allerdings den `roomToBeSaved` als zweiten Parameter mitgeben. 
+
+**7.** Implementieren Sie zu guter Letzt noch die `deleteRoom(roomToBeDeleted: Room): Observable<any>`-Methode und nutzen `delete` vom `HttpClient`.
+
+Die aufzurufende URL ist hier etwas schwieriger, da wir noch keine Primärschlüssel in unserer Anwendung kennen. Nutzen Sie bitte folgendes Ziel
+als ersten Parameter  `` `${ROOMS_ENDPOINT}/${roomToBeDeleted.building}-${roomToBeDeleted.roomNumber}` ``
+ 
+
+## Starten des Backends und Testen, testen, testen, ...
+
+Wenn Sie alles korrekt implementiert haben, steht der Benutzung der Raumverwaltung *fast* nichts mehr im Wege.
+
+Dieses Projekt enthält einen Server für die Daten, unser Backend, welches mit Hilfe von Java implementiert wurde. Es
+liegt im Ordner `server`. Sie sollten ja bereits damit vertraut sein, Webprojekte auf einem Tomcat-Server zu deployen. 
+
+**1.** Legen Sie eine Run-Konfiguration für das Projekt an. Starten Sie das Backend und nachfolgend Ihr Angular Frontend mit
+`ng serve`.
