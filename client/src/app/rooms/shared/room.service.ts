@@ -1,29 +1,29 @@
 import {Injectable} from '@angular/core';
-import {ROOMS} from './mock-rooms';
 import {Room} from './room';
-import {Observable, of} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+
+const ROOMS_ENDPOINT = '/rest/rooms';
 
 @Injectable({
     providedIn: 'root'
 })
 export class RoomService {
 
-    private rooms: Room[] = ROOMS;
+    constructor(private http: HttpClient) {
+    }
 
     listAllRooms(): Observable<Room[]> {
-        return of(this.rooms);
+        return this.http.get<Room[]>(ROOMS_ENDPOINT);
     }
 
-    saveRoom(roomToBeSaved: Room): Observable<Room[]> {
-        this.deleteRoom(roomToBeSaved);
-        this.rooms.push(roomToBeSaved);
-        return of(this.rooms);
+
+    saveRoom(roomToBeSaved: Room): Observable<void> {
+        return this.http.put<void>(ROOMS_ENDPOINT, roomToBeSaved);
     }
 
-    deleteRoom(roomToBeDeleted: Room): Observable<Room[]> {
-        this.rooms = this.rooms.filter(room =>
-          !(room.building === roomToBeDeleted.building && room.roomNumber === roomToBeDeleted.roomNumber));
-        return of(this.rooms);
+    deleteRoom(roomToBeDeleted: Room): Observable<void> {
+        return this.http.delete<void>(`${ROOMS_ENDPOINT}/${roomToBeDeleted.building}-${roomToBeDeleted.roomNumber}`);
     }
 
 }

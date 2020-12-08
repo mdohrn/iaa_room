@@ -1,1 +1,14 @@
-<app-room-list [rooms]="rooms" (delete)="onDeleteRoom($event)"></app-room-list>
+<p *ngIf="!currentRoom">
+    <app-room-list [rooms]="rooms"
+                   (add)="onAddRoom()"
+                   (edit)="onEditRoom($event)"
+                   (delete)="onDeleteRoom($event)">
+    </app-room-list>
+</p>
+
+<p *ngIf="currentRoom">
+    <app-room-form [room]="currentRoom"
+                   (save)="onSave($event)"
+                   (cancel)="onCancel()">
+    </app-room-form>
+</p>

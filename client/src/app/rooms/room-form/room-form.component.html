@@ -1,0 +1,28 @@
+<h3>Room Details</h3>
+<form (ngSubmit)="onSubmit()" #roomForm="ngForm" novalidate>
+    <p>
+        <label for="building">Building:</label>
+        <input id="building" name="building" [(ngModel)]="room.building" required
+            #building="ngModel">
+        <span *ngIf="building.dirty && building.invalid">Value is required</span>
+    </p>
+    <p>
+        <label for="roomNumber">Room Number:</label>
+        <input id="roomNumber" name="roomNumber" [(ngModel)]="room.roomNumber" type="number" required
+               appMin="1" #roomNumber="ngModel">
+        <span *ngIf="roomNumber.dirty && roomNumber.hasError('required')">Value is required</span>
+        <span *ngIf="roomNumber.dirty && roomNumber.hasError('min')">Min value of 1 required</span>
+    </p>
+    <p>
+        <label for="seats">Seats:</label>
+        <input id="seats" name="seats" [(ngModel)]="room.seats" type="number" required
+            #seats="ngModel">
+        <span *ngIf="seats.dirty && seats.invalid">Value is required</span>
+    </p>
+    <p>
+        <label for="projectorPresent">Projector present?</label>
+        <input id="projectorPresent" name="projectorPresent" type="checkbox" [(ngModel)]="room.projectorPresent">
+    </p>
+    <input type="button" value="Cancel" (click)="onCancel()">
+    <input type="submit" value="Save" [disabled]="roomForm.invalid">
+</form>

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Room} from '../shared/room';
 
 @Component({
@@ -6,28 +6,39 @@ import {Room} from '../shared/room';
     templateUrl: './room-list.component.html',
     styleUrls: ['./room-list.component.css']
 })
-export class RoomListComponent implements OnInit {
+export class RoomListComponent {
 
     @Input()
     rooms: Room[] = [];
 
-    selectedRoom?: Room;
+    @Output()
+    edit = new EventEmitter<Room>();
+
+    @Output()
+    add = new EventEmitter();
 
     @Output()
     delete = new EventEmitter<Room>();
 
-    onSelect(room: Room) {
-        this.selectedRoom = room;
-    }
-
-    onDelete() {
-        this.delete.emit(this.selectedRoom);
-    }
+    selectedRoom?: Room;
 
     constructor() {
     }
 
-    ngOnInit() {
+    onSelect(room: Room): void {
+        this.selectedRoom = room;
+    }
+
+    onDelete(): void {
+      this.delete.emit(this.selectedRoom);
+    }
+
+    onEdit(): void {
+        this.edit.emit(this.selectedRoom);
+    }
+
+    onAdd(): void {
+        this.add.emit();
     }
 
 }

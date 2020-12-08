@@ -11,6 +11,8 @@ export class RoomsComponent implements OnInit {
 
     rooms: Room[];
 
+    currentRoom?: Room;
+
     constructor(private roomService: RoomService) {
     }
 
@@ -18,13 +20,28 @@ export class RoomsComponent implements OnInit {
         this.reloadList();
     }
 
+    onEditRoom(room: Room): void {
+        this.currentRoom = room;
+    }
+
+    onAddRoom(): void {
+        this.currentRoom = new Room();
+    }
+
     onDeleteRoom(roomToBeDeleted: Room): void {
-        this.roomService.deleteRoom(roomToBeDeleted).subscribe(ignored => this.reloadList());
+        this.roomService.deleteRoom(roomToBeDeleted).subscribe(() => this.reloadList());
+    }
+
+    onSave(roomToBeSaved: Room): void {
+        this.roomService.saveRoom(roomToBeSaved).subscribe(() => this.reloadList());
+    }
+
+    onCancel(): void {
+        this.reloadList();
     }
 
     private reloadList(): void {
-        this.roomService.listAllRooms().subscribe(rooms => {
-            this.rooms = rooms;
-        });
+        this.currentRoom = null;
+        this.roomService.listAllRooms().subscribe(rooms => this.rooms = rooms);
     }
 }
