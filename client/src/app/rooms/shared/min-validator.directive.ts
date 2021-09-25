@@ -1,5 +1,6 @@
 import {Directive, Input} from '@angular/core';
-import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator} from '@angular/forms';
+import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, Validators} from '@angular/forms';
+import {min} from 'rxjs/operators';
 
 @Directive({
     selector: '[appMin]',

@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {ROOMS} from './mock-rooms';
 import {Room} from './room';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
@@ -18,12 +19,12 @@ export class RoomService {
     }
 
 
-    saveRoom(roomToBeSaved: Room): Observable<void> {
-        return this.http.put<void>(ROOMS_ENDPOINT, roomToBeSaved);
+    saveRoom(roomToBeSaved: Room): Observable<any> {
+        return this.http.put(ROOMS_ENDPOINT, roomToBeSaved);
     }
 
-    deleteRoom(roomToBeDeleted: Room): Observable<void> {
-        return this.http.delete<void>(`${ROOMS_ENDPOINT}/${roomToBeDeleted.building}-${roomToBeDeleted.roomNumber}`);
+    deleteRoom(roomToBeDeleted: Room): Observable<any> {
+        return this.http.delete(`${ROOMS_ENDPOINT}/${roomToBeDeleted.building}-${roomToBeDeleted.roomNumber}`);
     }
 
 }

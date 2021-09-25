@@ -25,20 +25,19 @@ export class RoomListComponent {
     constructor() {
     }
 
-    onSelect(room: Room): void {
+    onSelect(room: Room) {
         this.selectedRoom = room;
     }
 
-    onDelete(): void {
-      this.delete.emit(this.selectedRoom);
-    }
-
-    onEdit(): void {
+    onEdit() {
         this.edit.emit(this.selectedRoom);
     }
 
-    onAdd(): void {
+    onAdd() {
         this.add.emit();
     }
 
+    onDelete() {
+        this.delete.emit(this.selectedRoom);
+    }
 }
