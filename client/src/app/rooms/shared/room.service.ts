@@ -24,7 +24,7 @@ export class RoomService {
     }
 
     deleteRoom(roomToBeDeleted: Room): Observable<any> {
-        return this.http.delete(`${ROOMS_ENDPOINT}/${roomToBeDeleted.building}-${roomToBeDeleted.roomNumber}`);
+        return this.http.delete(`${ROOMS_ENDPOINT}/${roomToBeDeleted.id}`);
     }
 
 }
